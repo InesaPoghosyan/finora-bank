@@ -69,35 +69,27 @@ def login():
 @main_routes.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
-        flash("Please log in first.", "warning")
-        return redirect(url_for("main.login"))
+        return redirect("/login")
 
-    cursor.execute("SELECT full_name FROM users WHERE id = %s", (session["user_id"],))
-    user_info = cursor.fetchone()
+    user_id = session["user_id"]
 
-    if not user_info:
-        session.clear()
-        flash("User not found, please log in again.", "danger")
-        return redirect(url_for("main.login"))
+    # Get user's cards
+    cursor.execute("SELECT * FROM cards WHERE user_id = %s", (user_id,))
+    cards = cursor.fetchall()
 
-    user = {
-        "name": user_info["full_name"],
-        "balance": 12450.75,  # Replace with actual DB query later
-        "cards": [
-            {"bank": "Finora Bank", "number": "**** **** **** 1234", "type": "Visa", "valid": "12/26"},
-            {"bank": "Finora Premium", "number": "**** **** **** 5678", "type": "Mastercard", "valid": "03/27"},
-        ],
-        "transactions": [
-            {"date": "2025-07-23", "desc": "Amazon Purchase", "amount": -59.99},
-            {"date": "2025-07-22", "desc": "Salary Deposit", "amount": +1200.00},
-            {"date": "2025-07-21", "desc": "Electricity Bill", "amount": -90.10},
-        ]
-    }
+    if not cards:
+        return render_template("dashboard.html", cards=[], transactions=[])
 
-    return render_template("dashboard.html", user=user)
+    # If cards exist, get transactions
+    card_ids = [card["id"] for card in cards]
+    format_strings = ','.join(['%s'] * len(card_ids))
+    cursor.execute(f"""
+        SELECT t.*, c.card_number FROM transactions t
+        JOIN cards c ON t.card_id = c.id
+        WHERE t.card_id IN ({format_strings})
+        ORDER BY t.date DESC
+        LIMIT 5
+    """, tuple(card_ids))
+    transactions = cursor.fetchall()
 
-@main_routes.route("/logout")
-def logout():
-    session.clear()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("main.login"))
+    return render_template("dashboard.html", cards=cards, transactions=transactions)

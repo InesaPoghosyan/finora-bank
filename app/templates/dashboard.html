@@ -1,71 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Finora Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finora Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+
+    header {
+      background-color: #198754;
+      padding: 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px 20px;
+    }
+
+    .card-box {
+      background-color: white;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      width: 300px;
+    }
+
+    .card-box h3 {
+      color: #198754;
+      margin-top: 0;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .transactions {
+      margin-top: 40px;
+      padding: 20px;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .transactions h3 {
+      margin-top: 0;
+      color: #198754;
+    }
+
+    .transaction-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .transaction-list li {
+      border-bottom: 1px solid #dee2e6;
+      padding: 10px 0;
+    }
+
+    .no-card {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 18px;
+      padding: 20px;
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 10px;
+      color: #856404;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .add-card-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #198754;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    .add-card-btn:hover {
+      background-color: #146c43;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body>
 
-    <nav class="bg-green-600 p-4 text-white text-lg">
-        <div class="container mx-auto flex justify-between">
-            <span class="font-bold">Finora Online Banking</span>
-            <span>Hello, {{ user.name }}</span>
-        </div>
-    </nav>
+  <header>
+    <h1>Finora Online Banking</h1>
+  </header>
 
-    <div class="container mx-auto p-6">
+  <!-- Show if no card -->
+  <div id="no-card-message" class="no-card" style="display: none;">
+    <p>No card found. Please add a card to see your dashboard.</p>
+    <a href="/add-card" class="add-card-btn">+ Add Card</a>
+  </div>
 
-        <!-- Account Balance -->
-        <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-2 text-gray-800">Current Balance</h2>
-            <p class="text-3xl text-green-600 font-bold">${{ '%.2f'|format(user.balance) }}</p>
-        </div>
-
-        <!-- Bank Cards -->
-        <div class="grid md:grid-cols-2 gap-4 mb-6">
-            {% for card in user.cards %}
-            <div class="bg-green-500 text-white rounded-xl p-4 shadow-md">
-                <h3 class="text-lg font-semibold">{{ card.bank }}</h3>
-                <p class="text-2xl tracking-widest my-2">{{ card.number }}</p>
-                <div class="flex justify-between text-sm">
-                    <span>{{ card.type }}</span>
-                    <span>Valid Thru: {{ card.valid }}</span>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <button class="bg-white text-green-600 border border-green-600 px-4 py-2 rounded-lg hover:bg-green-600 hover:text-white transition">
-            + Add New Card
-        </button>
-
-        <!-- Transaction History -->
-        <div class="mt-8 bg-white rounded-2xl shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Recent Transactions</h2>
-            <table class="w-full text-left">
-                <thead class="text-gray-500 border-b">
-                    <tr>
-                        <th class="pb-2">Date</th>
-                        <th class="pb-2">Description</th>
-                        <th class="pb-2">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for tx in user.transactions %}
-                    <tr class="border-b last:border-none">
-                        <td class="py-2">{{ tx.date }}</td>
-                        <td class="py-2">{{ tx.desc }}</td>
-                        <td class="py-2 {% if tx.amount < 0 %}text-red-500{% else %}text-green-500{% endif %}">
-                            {{ '$%.2f'|format(tx.amount) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
+  <!-- Dashboard starts -->
+  <div class="dashboard" id="dashboard" style="display: none;">
+    <div class="card-box">
+      <h3>Balance</h3>
+      <div class="value">$4,780.23</div>
     </div>
 
+    <div class="card-box">
+      <h3>Last Transaction</h3>
+      <div class="value">- $120.00</div>
+    </div>
+
+    <div class="card-box">
+      <h3>Card Status</h3>
+      <div class="value">Active</div>
+    </div>
+  </div>
+
+  <!-- Transactions -->
+  <div class="transactions" id="transaction-box" style="display: none;">
+    <h3>Recent Transactions</h3>
+    <ul class="transaction-list">
+      <li>+ $100.00 — Salary</li>
+      <li>- $25.99 — Groceries</li>
+      <li>- $13.45 — Coffee Shop</li>
+    </ul>
+  </div>
+
+  <script>
+    // Fake condition: does the user have a card?
+    const hasCard = false; // change to true to simulate having a card
+
+    if (hasCard) {
+      document.getElementById("dashboard").style.display = "flex";
+      document.getElementById("transaction-box").style.display = "block";
+    } else {
+      document.getElementById("no-card-message").style.display = "block";
+    }
+  </script>
 </body>
 </html>
