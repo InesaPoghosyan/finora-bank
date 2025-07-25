@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finora Welcome</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    /* Blur overlay */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: inherit;
+      filter: blur(8px);
+      z-index: -2;
+    }
+
+    /* Dark transparent overlay for better contrast */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 45, 15, 0.6);
+      z-index: -1;
+    }
+
+    .content {
+      position: relative;
+      max-width: 450px;
+      padding: 2.5rem 2rem;
+      background-color: rgba(6, 46, 26, 0.49);
+      border-radius: 25px;
+      box-shadow: 0 0 25px rgba(0, 100, 40, 0.7);
+      user-select: none;
+    }
+
+    .content h1 {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    .content p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      font-weight: 500;
+      color: #b3d9a5;
+      text-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .btn {
+      background-color: #4caf50;
+      border: none;
+      padding: 0.8rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.6);
+      transition: all 0.3s ease;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      background-color: #388e3c;
+      box-shadow: 0 10px 25px rgba(56, 142, 60, 0.8);
+      transform: scale(1.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .content {
+        max-width: 90vw;
+        padding: 2rem 1.5rem;
+      }
+      .content h1 {
+        font-size: 3rem;
+      }
+      .content p {
+        font-size: 1rem;
+      }
+      .buttons {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Finora</h1>
+    <p>Online Mobile Banking</p>
+    <div class="buttons">
+      <a href="/login" class="btn">Log In</a>
+      <a href="/register" class="btn">Register</a>
+    </div>
+  </div>
+</body>
+</html>

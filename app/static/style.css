@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: inherit;
+  filter: blur(8px);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 45, 15, 0.6);
+  z-index: -1;
+}
+
+.content {
+  position: relative;
+  max-width: 450px;
+  padding: 2.5rem 2rem;
+  background-color: rgba(6, 46, 26, 0.49);
+  border-radius: 25px;
+  box-shadow: 0 0 25px rgba(0, 100, 40, 0.7);
+  user-select: none;
+}
+
+.content h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+.content p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  color: #b3d9a5;
+  text-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+
+.form input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+}
+
+.form input:focus {
+  box-shadow: 0 0 8px rgba(0, 255, 100, 0.5);
+}
+
+.btn {
+  background-color: #4caf50;
+  border: none;
+  padding: 0.8rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.6);
+  transition: all 0.3s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  background-color: #388e3c;
+  box-shadow: 0 10px 25px rgba(56, 142, 60, 0.8);
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .content {
+    max-width: 90vw;
+    padding: 2rem 1.5rem;
+  }
+  .content h1 {
+    font-size: 2.5rem;
+  }
+  .content p {
+    font-size: 1rem;
+  }
+}
