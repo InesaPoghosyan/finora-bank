@@ -73,23 +73,110 @@ def dashboard():
 
     user_id = session["user_id"]
 
-    # Get user's cards
-    cursor.execute("SELECT * FROM cards WHERE user_id = %s", (user_id,))
+    # Get user's linked cards
+    cursor.execute("""
+        SELECT c.* FROM cards c
+        JOIN user_cards uc ON c.id = uc.card_id
+        WHERE uc.user_id = %s
+    """, (user_id,))
     cards = cursor.fetchall()
 
-    if not cards:
-        return render_template("dashboard.html", cards=[], transactions=[])
-
-    # If cards exist, get transactions
-    card_ids = [card["id"] for card in cards]
-    format_strings = ','.join(['%s'] * len(card_ids))
-    cursor.execute(f"""
-        SELECT t.*, c.card_number FROM transactions t
-        JOIN cards c ON t.card_id = c.id
-        WHERE t.card_id IN ({format_strings})
-        ORDER BY t.date DESC
+    # Get recent transactions for this user ordered by created_at
+    cursor.execute("""
+        SELECT description, amount, created_at FROM transactions
+        WHERE user_id = %s
+        ORDER BY created_at DESC
         LIMIT 5
-    """, tuple(card_ids))
+    """, (user_id,))
     transactions = cursor.fetchall()
 
     return render_template("dashboard.html", cards=cards, transactions=transactions)
+
+
+@main_routes.route('/add-card', methods=["GET", "POST"])
+def add_card():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if request.method == "POST":
+        card_holder = request.form.get("card_holder_name")
+        card_number = request.form.get("card_number")
+        expiry_date = request.form.get("expiry_date")
+        cvv = request.form.get("cvv")
+
+        if not (card_holder and card_number and expiry_date and cvv):
+            flash("Please fill out all card fields.", "warning")
+            return redirect(url_for("main.add_card"))
+
+        # Check if card exists in cards table
+        cursor.execute("""
+            SELECT * FROM cards 
+            WHERE card_number = %s AND expiry_date = %s AND cvv = %s AND card_holder_name = %s
+        """, (card_number, expiry_date, cvv, card_holder))
+        existing_card = cursor.fetchone()
+
+        if not existing_card:
+            flash("Card does not exist in our system. Please contact support to register your card.", "danger")
+            return redirect(url_for("main.add_card"))
+
+        # Check if this card already linked to user
+        cursor.execute("""
+            SELECT * FROM user_cards WHERE card_id = %s AND user_id = %s
+        """, (existing_card["id"], session["user_id"]))
+        already_added = cursor.fetchone()
+
+        if already_added:
+            flash("This card is already linked to your account.", "info")
+            return redirect(url_for("main.dashboard"))
+
+        # Link card to user
+        cursor.execute("""
+            INSERT INTO user_cards (user_id, card_id) VALUES (%s, %s)
+        """, (session["user_id"], existing_card["id"]))
+        db.commit()
+
+        flash("Card added successfully!", "success")
+        return redirect(url_for("main.dashboard"))
+
+    return render_template('add_card.html')
+
+
+@main_routes.route('/submit_card', methods=['POST'])
+def submit_card():
+    if "user_id" not in session:
+        flash("Please log in first.", "warning")
+        return redirect(url_for('main.login'))
+
+    card_number = request.form.get('card_number')
+    card_holder_name = request.form.get('card_holder_name')
+    expiry_date = request.form.get('expiry_date')
+    cvv = request.form.get('cvv')
+
+    if not all([card_number, card_holder_name, expiry_date, cvv]):
+        flash("Please fill out all card fields.", "warning")
+        return redirect(url_for('main.add_card'))
+
+    try:
+        # Insert new card (id is auto-increment, no need to specify)
+        cursor.execute("""
+            INSERT INTO cards (card_number, card_holder_name, expiry_date, cvv, balance)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (card_number, card_holder_name, expiry_date, cvv, 0))  # New card balance default to 0
+        db.commit()
+
+        # Get the inserted card's id
+        card_id = cursor.lastrowid
+
+        # Link the new card to the user
+        cursor.execute("""
+            INSERT INTO user_cards (user_id, card_id)
+            VALUES (%s, %s)
+        """, (session['user_id'], card_id))
+        db.commit()
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", "danger")
+        return redirect(url_for('main.add_card'))
+
+    flash("Card added successfully!")
+    return redirect(url_for('main.dashboard'))

@@ -21,9 +21,7 @@
 
     .dashboard {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
       padding: 40px 20px;
     }
 
@@ -33,7 +31,8 @@
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
       padding: 20px;
-      width: 300px;
+      width: 320px;
+      margin-bottom: 30px;
     }
 
     .card-box h3 {
@@ -48,9 +47,9 @@
     }
 
     .transactions {
-      margin-top: 40px;
+      margin: 0 auto 40px auto;
       padding: 20px;
-      max-width: 800px;
+      max-width: 500px;
       background-color: white;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -59,21 +58,43 @@
     .transactions h3 {
       margin-top: 0;
       color: #198754;
+      text-align: center;
     }
 
     .transaction-list {
       list-style-type: none;
       padding-left: 0;
+      margin: 0;
     }
 
     .transaction-list li {
       border-bottom: 1px solid #dee2e6;
       padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
     }
 
-    .no-card {
+    .transaction-amount {
+      font-weight: bold;
+    }
+
+    .transaction-amount.positive {
+      color: green;
+    }
+
+    .transaction-amount.negative {
+      color: red;
+    }
+
+    .transaction-date {
+      color: #6c757d;
+      font-size: 0.85rem;
+      margin-left: 10px;
+    }
+
+    .no-card, .no-transactions {
       text-align: center;
-      margin-top: 60px;
       font-size: 18px;
       padding: 20px;
       background-color: #fff3cd;
@@ -81,8 +102,7 @@
       border-radius: 10px;
       color: #856404;
       max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 40px auto;
     }
 
     .add-card-btn {
@@ -108,50 +128,44 @@
     <h1>Finora Online Banking</h1>
   </header>
 
-  <!-- Show if no card -->
-  <div id="no-card-message" class="no-card" style="display: none;">
-    <p>No card found. Please add a card to see your dashboard.</p>
-    <a href="/add-card" class="add-card-btn">+ Add Card</a>
+  {% if not cards %}
+  <div class="no-card">
+    <p>No cards linked to your account. Please add a card.</p>
+    <a href="{{ url_for('main.add_card') }}" class="add-card-btn">+ Add Card</a>
   </div>
-
-  <!-- Dashboard starts -->
-  <div class="dashboard" id="dashboard" style="display: none;">
+  {% else %}
+  <div class="dashboard">
+    {# Show only the first card #}
+    {% set card = cards[0] %}
     <div class="card-box">
-      <h3>Balance</h3>
-      <div class="value">$4,780.23</div>
-    </div>
-
-    <div class="card-box">
-      <h3>Last Transaction</h3>
-      <div class="value">- $120.00</div>
-    </div>
-
-    <div class="card-box">
-      <h3>Card Status</h3>
-      <div class="value">Active</div>
+      <h3>Card ending in {{ card.card_number[-4:] }}</h3>
+      <p><strong>Holder:</strong> {{ card.card_holder_name }}</p>
+      <p><strong>Expiry:</strong> {{ card.expiry_date }}</p>
+      <p><strong>Balance:</strong> ${{ "%.2f"|format(card.balance) }}</p>
     </div>
   </div>
 
-  <!-- Transactions -->
-  <div class="transactions" id="transaction-box" style="display: none;">
+  <div class="transactions">
     <h3>Recent Transactions</h3>
+    {% if transactions %}
     <ul class="transaction-list">
-      <li>+ $100.00 — Salary</li>
-      <li>- $25.99 — Groceries</li>
-      <li>- $13.45 — Coffee Shop</li>
+      {% for t in transactions %}
+      <li>
+        <span>
+          {{ t.description }}
+          <span class="transaction-date">({{ t.created_at }})</span>
+        </span>
+        <span class="transaction-amount {% if t.amount >= 0 %}positive{% else %}negative{% endif %}">
+          {% if t.amount >= 0 %}+{% else %}-{% endif %}${{ "%.2f"|format(t.amount|abs) }}
+        </span>
+      </li>
+      {% endfor %}
     </ul>
+    {% else %}
+    <div class="no-transactions">No recent transactions found.</div>
+    {% endif %}
   </div>
+  {% endif %}
 
-  <script>
-    // Fake condition: does the user have a card?
-    const hasCard = false; // change to true to simulate having a card
-
-    if (hasCard) {
-      document.getElementById("dashboard").style.display = "flex";
-      document.getElementById("transaction-box").style.display = "block";
-    } else {
-      document.getElementById("no-card-message").style.display = "block";
-    }
-  </script>
 </body>
 </html>

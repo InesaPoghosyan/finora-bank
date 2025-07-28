@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finora - Add Card</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f4fdf6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #1b4d22;
+    }
+
+    .card-form {
+      background-color: white;
+      border: 1px solid #c6e9c9;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 20px rgba(34, 139, 34, 0.05);
+    }
+
+    .card-form h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      color: #145a32;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #145a32;
+    }
+
+    input {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid #cceacc;
+      background-color: transparent;
+      padding: 10px 5px;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: #145a32;
+    }
+
+    input:focus {
+      outline: none;
+      border-bottom-color: #2e7d32;
+    }
+
+    button {
+      width: 100%;
+      background-color: #2e7d32;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1b4d22;
+    }
+  </style>
+</head>
+<body>
+  <form class="card-form" method="POST" action="{{ url_for('main.submit_card') }}">
+    <h1>Add Your Card</h1>
+
+    <label for="cardHolder">Full Name</label>
+    <input type="text" id="cardHolder" name="card_holder_name" placeholder="John Doe" required />
+
+    <label for="cardNumber">Card Number</label>
+    <input type="text" id="cardNumber" name="card_number" placeholder="1234 5678 9012 3456" required />
+
+    <label for="secureCode">CVV</label>
+    <input type="text" id="secureCode" name="cvv" placeholder="123" required />
+
+    <label for="expiryYear">Expiry Year</label>
+    <input type="text" id="expiryYear" name="expiry_date" placeholder="2027" required />
+
+    <button type="submit">Add Card</button>
+  </form>
+</body>
+</html>
