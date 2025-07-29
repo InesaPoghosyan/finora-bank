@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Transactions - Finora</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f0f2f5;
+      color: #212529;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      color: #198754;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      margin: 0 auto;
+      width: 90%;
+      max-width: 600px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #dee2e6;
+      text-align: left;
+    }
+    th {
+      background-color: #198754;
+      color: white;
+    }
+    .positive {
+      color: green;
+      font-weight: bold;
+    }
+    .negative {
+      color: red;
+      font-weight: bold;
+    }
+    .no-transactions {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 1.2rem;
+      color: #856404;
+      background-color: #fff3cd;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Your Transactions</h2>
+  {% if transactions %}
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tx in transactions %}
+      <tr>
+        <td>{{ tx.description }}</td>
+        <td class="{{ 'positive' if tx.amount >= 0 else 'negative' }}">
+          {{ "+" if tx.amount >= 0 else "-" }}${{ "%.2f"|format(tx.amount|abs) }}
+        </td>
+        <td>{{ tx.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="no-transactions">No transactions found.</div>
+  {% endif %}
+</body>
+</html>

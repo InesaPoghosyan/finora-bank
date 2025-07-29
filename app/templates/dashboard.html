@@ -8,44 +8,69 @@
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background-color: #f8f9fa;
+      background-color: #f0f2f5;
       color: #212529;
     }
 
-    header {
+    /* Navbar */
+    nav {
       background-color: #198754;
-      padding: 20px;
-      text-align: center;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: white;
     }
 
+    .nav-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .nav-links a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Card Display */
     .dashboard {
       display: flex;
       justify-content: center;
-      padding: 40px 20px;
+      margin: 40px 20px;
     }
 
-    .card-box {
-      background-color: white;
-      border: 1px solid #dee2e6;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      padding: 20px;
-      width: 320px;
-      margin-bottom: 30px;
+    .card-ui {
+      background: linear-gradient(135deg, #1abc9c, #16a085);
+      color: white;
+      border-radius: 15px;
+      width: 340px;
+      padding: 25px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
 
-    .card-box h3 {
-      color: #198754;
+    .card-ui h3 {
       margin-top: 0;
+      font-size: 18px;
+      letter-spacing: 1px;
     }
 
-    .value {
-      font-size: 24px;
+    .card-ui .balance {
+      font-size: 28px;
+      margin: 20px 0;
       font-weight: bold;
-      margin-top: 10px;
     }
 
+    .card-ui .details {
+      font-size: 14px;
+    }
+
+    /* Transactions Section */
     .transactions {
       margin: 0 auto 40px auto;
       padding: 20px;
@@ -124,9 +149,16 @@
 </head>
 <body>
 
-  <header>
-    <h1>Finora Online Banking</h1>
-  </header>
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-title">Finora</div>
+    <div class="nav-links">
+      <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('main.transfer') }}">Transfer</a>
+      <a href="{{ url_for('main.transaction') }}">Transactions</a>
+      <a href="{{ url_for('main.logout') }}" onclick="return confirm('Are you sure you want to log out?');">Logout</a>
+    </div>
+  </nav>
 
   {% if not cards %}
   <div class="no-card">
@@ -135,16 +167,18 @@
   </div>
   {% else %}
   <div class="dashboard">
-    {# Show only the first card #}
     {% set card = cards[0] %}
-    <div class="card-box">
+    <div class="card-ui">
       <h3>Card ending in {{ card.card_number[-4:] }}</h3>
-      <p><strong>Holder:</strong> {{ card.card_holder_name }}</p>
-      <p><strong>Expiry:</strong> {{ card.expiry_date }}</p>
-      <p><strong>Balance:</strong> ${{ "%.2f"|format(card.balance) }}</p>
+      <div class="balance">${{ "%.2f"|format(card.balance) }}</div>
+      <div class="details">
+        <p><strong>Holder:</strong> {{ card.card_holder_name }}</p>
+        <p><strong>Expiry:</strong> {{ card.expiry_date }}</p>
+      </div>
     </div>
   </div>
 
+  <!-- Transactions -->
   <div class="transactions">
     <h3>Recent Transactions</h3>
     {% if transactions %}
